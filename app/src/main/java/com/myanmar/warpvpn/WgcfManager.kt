@@ -26,6 +26,10 @@ class WgcfManager(private val onLogListener: ((String) -> Unit)? = null) {
         .retryOnConnectionFailure(true)
         .build()
 
+    // Cloudflare WARP WireGuard uses UDP 2408 by default. UDP 500 is an
+    // optional fallback for restricted networks, not the primary WireGuard port.
+    private val wireGuardPort = "2408"
+
     private val cfApiBases: List<String>
         get() = listOf(
             NativeUtils.getCfApiBase1(),
@@ -50,11 +54,12 @@ class WgcfManager(private val onLogListener: ((String) -> Unit)? = null) {
     }
 
     private fun generateWarpIpList(): List<String> {
+        // Current Cloudflare WARP consumer ingress ranges. Keeping the scan
+        // inside these ranges avoids selecting unrelated Cloudflare addresses
+        // that can answer ICMP but do not accept WARP WireGuard traffic.
         val ipv4Prefixes = listOf(
-            "188.114.96.", "188.114.97.", "188.114.98.", "188.114.99.",
-            "162.159.192.", "162.159.193.", "162.159.195.", "8.34.146.",
-            "8.39.214.", "8.39.204.", "8.6.112.", "8.35.211.", "8.39.125.",
-            "8.47.69."
+            "162.159.192.", "162.159.193.", "162.159.195.",
+            "188.114.96.", "188.114.97.", "188.114.98.", "188.114.99."
         )
 
         val ipList = mutableListOf<String>()
@@ -155,7 +160,7 @@ class WgcfManager(private val onLogListener: ((String) -> Unit)? = null) {
             batchIndex++
         }
 
-        val finalIp = bestIp ?: "8.6.112.159"
+        val finalIp = bestIp ?: "162.159.193.1"
         if (bestIp != null) {
             log("🏆 Selected fastest endpoint: ${maskIp(finalIp)} with Avg Latency $lowestLatency ms")
         } else {
@@ -281,6 +286,11 @@ class WgcfManager(private val onLogListener: ((String) -> Unit)? = null) {
         val config = result.getJSONObject("config")
         val peers = config.getJSONArray("peers").getJSONObject(0)
         val serverPublicKey = peers.getString("public_key")
+        val apiEndpoint = peers.optJSONObject("endpoint")
+            ?.optString("host", "")
+            ?.trim()
+            .orEmpty()
+        val selectedEndpoint = apiEndpoint.ifBlank { endpoint }
 
         val interfaceObj = config.getJSONObject("interface")
         val addresses = interfaceObj.getJSONObject("addresses")
@@ -291,8 +301,8 @@ class WgcfManager(private val onLogListener: ((String) -> Unit)? = null) {
 
         return buildRawWireGuardConfig(
             privateKey = privateKey,
-            endpoint = endpoint,
-            port = "500",
+            endpoint = selectedEndpoint,
+            port = wireGuardPort,
             address = "$ipv4/32, $ipv6/128",
             publicKey = serverPublicKey,
             dns = "1.1.1.1, 1.0.0.1"
@@ -336,7 +346,7 @@ class WgcfManager(private val onLogListener: ((String) -> Unit)? = null) {
         return buildRawWireGuardConfig(
             privateKey = clientPrivateKey,
             endpoint = bestEndpoint,
-            port = "500",
+            port = wireGuardPort,
             address = rawAddress,
             publicKey = serverPublicKey,
             dns = "1.1.1.1, 1.0.0.1"
@@ -366,9 +376,24 @@ class WgcfManager(private val onLogListener: ((String) -> Unit)? = null) {
             
             [Peer]
             PublicKey = $publicKey
-            Endpoint = $endpoint:$port
+            Endpoint = ${formatEndpoint(endpoint, port)}
             AllowedIPs = 0.0.0.0/0, ::/0
+            PersistentKeepalive = 25
         """.trimIndent()
+    }
+
+    private fun formatEndpoint(endpoint: String, port: String): String {
+        val value = endpoint.trim()
+        if (value.isEmpty()) return "162.159.193.1:$port"
+
+        // Preserve an API-provided host that already includes its port.
+        if (value.matches(Regex("^.+:\\d+$"))) return value
+
+        // Bracket raw IPv6 literals before adding the UDP port.
+        if (value.contains(":") && !value.startsWith("[")) {
+            return "[$value]:$port"
+        }
+        return "$value:$port"
     }
 
     suspend fun testEndpoint(endpoint: String, timeout: Int = 2000): Boolean = withContext(Dispatchers.IO) {

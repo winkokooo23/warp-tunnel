@@ -847,12 +847,13 @@ class MainActivity : AppCompatActivity() {
             PublicKey = $publicKey
             Endpoint = $endpoint
             AllowedIPs = 0.0.0.0/0, ::/0
+            PersistentKeepalive = 25
         """.trimIndent()
     }
 
     private fun extractEndpoint(configStr: String): String {
         val match = Regex("Endpoint\\s*=\\s*(\\S+)").find(configStr)
-        return match?.groupValues?.get(1) ?: "162.159.192.1:500"
+        return match?.groupValues?.get(1) ?: "162.159.193.1:2408"
     }
 
     private fun applyCustomDnsToConfig(rawConfig: String): String {
@@ -928,7 +929,8 @@ class MainActivity : AppCompatActivity() {
                         true
                     )
                     saveNewConfig(newModel)
-                    appendLog("New warp config saved!")
+                                            appendLog("New WinKoKo config saved!")
+
                 } else {
                     configStr = selectedModel.content
                     appendLog("Using active config [${selectedModel.name}]...")
