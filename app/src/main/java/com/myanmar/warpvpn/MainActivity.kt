@@ -527,7 +527,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         tvTelegram.setOnClickListener {
-            val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://t.me/premium_channel_404"))
+            val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://www.facebook.com/share/1AwQGQHNks/"))
             startActivity(intent)
         }
     }
