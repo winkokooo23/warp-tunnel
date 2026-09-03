@@ -42,95 +42,18 @@ class AuthManager(private val context: Context) {
 
     private val prefs = context.getSharedPreferences("WARP_VPN_PREFS", Context.MODE_PRIVATE)
 
-    suspend fun checkLicenseServer(hwid: String, inputSerialKey: String? = null): Pair<Boolean, String> = withContext(Dispatchers.IO) {
-        try {
-            if (workerApiUrl.isEmpty() || !workerApiUrl.startsWith("http")) {
-                Log.w("AuthManager", "API URL is not properly configured yet.")
-                if (isLocalLicenseValid()) {
-                    return@withContext Pair(true, "Offline License Active")
-                }
-                return@withContext Pair(false, "API URL Not Configured Yet!")
-            }
+    suspend fun checkLicenseServer(hwid: String, inputSerialKey: String? = null): Pair<Boolean, String> =
+        Pair(true, "Keyless mode enabled")
 
-            val keyToCheck = inputSerialKey ?: prefs.getString("SAVED_SERIAL_KEY", "") ?: ""
-
-            val jsonBody = JSONObject().apply {
-                put("hwid", hwid)
-                if (keyToCheck.isNotEmpty()) {
-                    put("serial_key", keyToCheck)
-                }
-            }
-
-            val request = try {
-                Request.Builder()
-                    .url(workerApiUrl)
-                    .post(jsonBody.toString().toRequestBody("application/json".toMediaType()))
-                    .build()
-            } catch (e: IllegalArgumentException) {
-                Log.e("AuthManager", "Invalid URL Format: ${e.message}")
-                if (isLocalLicenseValid()) {
-                    return@withContext Pair(true, "Offline License Active")
-                }
-                return@withContext Pair(false, "Invalid API URL Format!")
-            }
-
-            val response = client.newCall(request).execute()
-            val responseData = response.body?.string() ?: return@withContext Pair(false, "Empty Server Response")
-
-            val jsonResult = JSONObject(responseData)
-            val success = jsonResult.optBoolean("success", false)
-            val message = jsonResult.optString("message", "Verification Failed")
-
-            if (success) {
-                val serialKey = jsonResult.optString("serial_key", keyToCheck)
-                val expireDate = jsonResult.optLong("expire_date", 0L)
-
-                prefs.edit()
-                    .putString("SAVED_SERIAL_KEY", serialKey)
-                    .putLong("SAVED_EXPIRE_DATE", expireDate)
-                    .putBoolean("IS_ACTIVATED", true)
-                    .apply()
-            } else {
-                if (jsonResult.optBoolean("is_expired", false) || inputSerialKey != null) {
-                    prefs.edit()
-                        .putBoolean("IS_ACTIVATED", false)
-                        .putLong("SAVED_EXPIRE_DATE", 0L)
-                        .apply()
-                }
-            }
-
-            return@withContext Pair(success, message)
-
-        } catch (e: Throwable) {
-            Log.e("AuthManager", "Exception in checkLicenseServer: ${e.message}", e)
-
-            val isLocalValid = isLocalLicenseValid()
-            if (isLocalValid) {
-                return@withContext Pair(true, "Offline License Active")
-            }
-            return@withContext Pair(false, "License Check Error: ${e.localizedMessage ?: "Unknown Error"}")
-        }
-    }
-
-    fun isLocalLicenseValid(): Boolean {
-        val isActivated = prefs.getBoolean("IS_ACTIVATED", false)
-        val expireDate = prefs.getLong("SAVED_EXPIRE_DATE", 0L)
-        return isActivated && System.currentTimeMillis() < expireDate
-    }
+    fun isLocalLicenseValid(): Boolean = true
 
     fun getSavedSerialKey(): String {
         return prefs.getString("SAVED_SERIAL_KEY", "NOT_ACTIVATED") ?: "NOT_ACTIVATED"
     }
 
-    fun getSavedExpireDate(): Long {
-        return prefs.getLong("SAVED_EXPIRE_DATE", 0L)
-    }
+    fun getSavedExpireDate(): Long = Long.MAX_VALUE
 
     fun clearLicenseData() {
-        prefs.edit()
-            .remove("SAVED_SERIAL_KEY")
-            .remove("SAVED_EXPIRE_DATE")
-            .putBoolean("IS_ACTIVATED", false)
-            .apply()
+        // No license state is used in keyless mode.
     }
 }

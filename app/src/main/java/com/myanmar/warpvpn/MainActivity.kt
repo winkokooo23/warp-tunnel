@@ -183,7 +183,7 @@ class MainActivity : AppCompatActivity() {
         tvExpireDate = findViewById(R.id.tvExpireDate)
 
         cardExpireDate.setOnClickListener {
-            showActivateLicenseDialog()
+            Toast.makeText(this, "WinKoKo Tunnel is ready to connect", Toast.LENGTH_SHORT).show()
         }
 
         onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
@@ -262,7 +262,7 @@ class MainActivity : AppCompatActivity() {
             else -> rbDnsDefault.isChecked = true
         }
 
-        checkLicenseOnStartup()
+        // License activation is not required for this user-owned build.
 
         updateLogsAndAdVisibility(switchLogs.isChecked)
 
@@ -300,140 +300,21 @@ class MainActivity : AppCompatActivity() {
     }
     
     private fun checkLicenseOnStartup() {
-        lifecycleScope.launch {
-            try {
-                val hwid = getDeviceHwid()
-                val (isValid, message) = authManager.checkLicenseServer(hwid)
-
-                if (!isValid) {
-                    authManager.clearLicenseData()
-                }
-                
-                updateExpireDateUI()
-                
-                if (!isValid && !isFinishing && !isDestroyed) {
-                    showActivateLicenseDialog()
-                }
-            } catch (e: Exception) {
-                e.printStackTrace()
-                appendLog("License startup error: ${e.message}")
-            }
-        }
+        // Intentionally disabled: this build does not use license activation.
+        updateExpireDateUI()
     }
 
     private fun updateExpireDateUI() {
         expireTimerJob?.cancel()
-        val expireDateMillis = authManager.getSavedExpireDate()
-        val currentTime = System.currentTimeMillis()
-
-        if (authManager.isLocalLicenseValid() && expireDateMillis > currentTime) {
-            startExpireCountdown(expireDateMillis)
-        } else {
-            tvExpireDate.text = "Not Activated / Expired"
-            tvExpireDate.setTextColor(Color.parseColor("#F87171"))
-
-            authManager.clearLicenseData()
-
-            if (isConnected) {
-                disconnectVpn()
-                appendLog("License not found. Disconnecting...")
-            }
-        }
-    }
-
-    private fun startExpireCountdown(expireDateMillis: Long) {
-        expireTimerJob?.cancel()
-        expireTimerJob = lifecycleScope.launch(Dispatchers.Main) {
-            while (isActive) {
-                val currentTime = System.currentTimeMillis()
-                val diff = expireDateMillis - currentTime
-                
-                if (diff > 0) {
-                    val days = diff / (1000 * 60 * 60 * 24)
-                    val hours = (diff / (1000 * 60 * 60)) % 24
-                    val minutes = (diff / (1000 * 60)) % 60
-                    val seconds = (diff / 1000) % 60
-                    
-                    val countdownText = if (days > 0) {
-                        String.format(Locale.getDefault(), "%dd %02dh %02dm %02ds left", days, hours, minutes, seconds)
-                    } else {
-                        String.format(Locale.getDefault(), "%02dh %02dm %02ds left", hours, minutes, seconds)
-                    }
-                    
-                    tvExpireDate.text = countdownText
-                    tvExpireDate.setTextColor(Color.parseColor("#4ADE80"))
-                } else {
-                    tvExpireDate.text = "License Expired"
-                    tvExpireDate.setTextColor(Color.parseColor("#F87171"))
-                    authManager.clearLicenseData()
-
-                    if (isConnected) {
-                        disconnectVpn()
-                        appendLog("⚠️ License expired. Connection terminated.")
-                    }
-                    break
-                }
-                delay(1000)
-            }
-        }
-    }
-
-    private fun showActivateLicenseDialog() {
-        val dialogView = layoutInflater.inflate(R.layout.dialog_activate_license, null)
-        val tvDialogHwid = dialogView.findViewById<TextView>(R.id.tvDialogHwid)
-        val btnCopyHwid = dialogView.findViewById<MaterialButton>(R.id.btnCopyHwidDialog)
-        val etLicenseKey = dialogView.findViewById<EditText>(R.id.etLicenseKey)
-        val btnCancel = dialogView.findViewById<MaterialButton>(R.id.btnCancelDialog)
-        val btnActivate = dialogView.findViewById<MaterialButton>(R.id.btnActivateDialog)
-
-        val hwid = getDeviceHwid()
-        tvDialogHwid.text = hwid
-
-        val dialog = AlertDialog.Builder(this, R.style.DarkCustomDialog)
-            .setView(dialogView)
-            .setCancelable(false)
-            .create()
-
-        btnCopyHwid.setOnClickListener {
-            val clipboard = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-            val clip = ClipData.newPlainText("HWID", hwid)
-            clipboard.setPrimaryClip(clip)
-            Toast.makeText(this, "HWID Copied to Clipboard!", Toast.LENGTH_SHORT).show()
-        }
-
-        btnCancel.setOnClickListener {
-            dialog.dismiss()
-        }
-
-        btnActivate.setOnClickListener {
-            val inputKey = etLicenseKey.text.toString().trim()
-            if (inputKey.isNotEmpty()) {
-                lifecycleScope.launch {
-                    appendLog("Verifying serial key...")
-                    val (success, message) = authManager.checkLicenseServer(hwid, inputKey)
-                    if (success) {
-                        Toast.makeText(this@MainActivity, "🎉 Activated Successfully!", Toast.LENGTH_SHORT).show()
-                        appendLog("✅ License key activated!")
-                        updateExpireDateUI()
-                        dialog.dismiss()
-                    } else {
-                        Toast.makeText(this@MainActivity, "❌ $message", Toast.LENGTH_LONG).show()
-                        appendLog("❌ $message")
-                    }
-                }
-            } else {
-                Toast.makeText(this, "Please enter a valid Serial Key", Toast.LENGTH_SHORT).show()
-            }
-        }
-
-        dialog.show()
+        tvExpireDate.text = "Ready to connect"
+        tvExpireDate.setTextColor(Color.parseColor("#4ADE80"))
     }
 
     private fun showHelpDialog() {
         val helpMessage = """
-            Welcome to WARP Tunnel!
+            Welcome to WinKoKo Tunnel!
             
-            [1] Tap To Connect: Click the main power button to establish a secure Warp connection.
+            [1] Tap To Connect: Click the main power button to establish a secure WinKoKo connection.
             
             [2] Engine Options:
             [3] Cloudflare Direct API: Connects directly through Cloudflare infrastructure.
@@ -450,7 +331,7 @@ class MainActivity : AppCompatActivity() {
         """.trimIndent()
 
         AlertDialog.Builder(this, R.style.DarkCustomDialog)
-            .setTitle("❓ WARP Tunnel Help")
+            .setTitle("❓ WinKoKo Tunnel Help")
             .setMessage(helpMessage)
             .setPositiveButton("OK") { dialog, _ ->
                 dialog.dismiss()
@@ -540,19 +421,10 @@ class MainActivity : AppCompatActivity() {
         }
 
         btnConnectCard.setOnClickListener {
-            val expireDateMillis = authManager.getSavedExpireDate()
-            val currentTime = System.currentTimeMillis()
-            
-            if (authManager.isLocalLicenseValid() && expireDateMillis > currentTime) {
-                if (isConnected) {
-                    disconnectVpn()
-                } else {
-                    prepareAndConnectVpn()
-                }
+            if (isConnected) {
+                disconnectVpn()
             } else {
-                updateExpireDateUI()
-                showActivateLicenseDialog()
-                Toast.makeText(this, "Please activate your license first!", Toast.LENGTH_SHORT).show()
+                prepareAndConnectVpn()
             }
         }
 
@@ -1013,33 +885,10 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun prepareAndConnectVpn() {
-        tvStatus.text = "VERIFYING LICENSE..."
+        tvStatus.text = "PREPARING..."
         btnConnectCard.setStrokeColor(Color.parseColor("#F59E0B"))
-
-        lifecycleScope.launch(Dispatchers.IO) {
-            val hwid = getDeviceHwid()
-            val (isValid, message) = authManager.checkLicenseServer(hwid)
-
-            withContext(Dispatchers.Main) {
-
-                if (!isValid) {
-                    authManager.clearLicenseData()
-                }
-                
-                updateExpireDateUI()
-
-                if (!isValid) {
-                    Toast.makeText(this@MainActivity, "❌ $message", Toast.LENGTH_LONG).show()
-                    appendLog("❌ $message")
-                    resetUi()
-                    showActivateLicenseDialog()
-                    return@withContext
-                }
-
-                appendLog("✅ License active. Proceeding with vpn connection...")
-                startActualVpnConnection()
-            }
-        }
+        appendLog("Preparing WinKoKo Tunnel connection...")
+        startActualVpnConnection()
     }
 
     private fun startActualVpnConnection() {
