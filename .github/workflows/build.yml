@@ -39,8 +39,8 @@ jobs:
       - name: Rename APKs
         run: |
           mkdir -p artifacts
-          cp app/build/outputs/apk/debug/*.apk artifacts/WinKoKo-Tunnel-debug.apk
-          cp app/build/outputs/apk/release/*.apk artifacts/WinKoKo-Tunnel-release-unsigned.apk
+          cp app/build/outputs/apk/debug/*universal*.apk artifacts/WinKoKo-Tunnel-debug.apk
+          cp app/build/outputs/apk/release/*universal*.apk artifacts/WinKoKo-Tunnel-release-unsigned.apk
       - name: Upload APK artifacts
         uses: actions/upload-artifact@v4
         with:
