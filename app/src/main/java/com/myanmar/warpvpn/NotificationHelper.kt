@@ -13,7 +13,7 @@ import com.myanmar.warpvpn.R
 class NotificationHelper(private val context: Context) {
 
     companion object {
-        const val CHANNEL_ID = "WARP_TUNNEL_SERVICE_CHANNEL"
+        const val CHANNEL_ID = "WINKOKO_TUNNEL_SERVICE_CHANNEL"
         const val NOTIFICATION_ID = 4040
     }
 
@@ -28,7 +28,7 @@ class NotificationHelper(private val context: Context) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val channel = NotificationChannel(
                 CHANNEL_ID,
-                "WARP TUNNEL Connection Status",
+                "WinKoKo Tunnel Connection Status",
                 NotificationManager.IMPORTANCE_LOW
             ).apply {
                 description = "Shows active VPN status and real-time ping"
@@ -49,7 +49,7 @@ class NotificationHelper(private val context: Context) {
         )
 
         return NotificationCompat.Builder(context, CHANNEL_ID)
-            .setContentTitle("WARP TUNNEL")
+            .setContentTitle("WinKoKo Tunnel")
             .setContentText("Active & Protected | $pingStatus")
             .setSmallIcon(R.drawable.ic_launcher)
             .setOngoing(true)

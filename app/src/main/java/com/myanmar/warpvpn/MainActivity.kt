@@ -165,11 +165,9 @@ class MainActivity : AppCompatActivity() {
         val prefs = getSharedPreferences("WARP_VPN_PREFS", Context.MODE_PRIVATE)
         val isDark = prefs.getBoolean("DARK_MODE", true)
 
-        if (!NativeUtils.verifyAppSignature(this)) {
-            Toast.makeText(this, "Tampered APK Detected! Closing App.", Toast.LENGTH_LONG).show()
-            finishAffinity()
-            return
-        }
+        // Do not force-close locally or CI-signed builds. The upstream certificate hash
+        // is not available when this project is rebuilt with a different keystore.
+        // Signature verification can be re-enabled after configuring the owner's release key.
 
         if (isDark) {
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
@@ -270,7 +268,7 @@ class MainActivity : AppCompatActivity() {
 
         updateActiveServerName()
 
-        appendLog("Warp Tunnel app started")
+        appendLog("WinKoKo Tunnel app started")
         appendLog("Ready to connect...")
 
         checkNotificationPermission()
@@ -789,7 +787,7 @@ class MainActivity : AppCompatActivity() {
         if (selected != null) {
             tvServerName.text = selected.name
         } else {
-            tvServerName.text = "Warp Auto Clean IP"
+            tvServerName.text = "WinKoKo Auto Clean IP"
         }
     }
 
@@ -1075,7 +1073,7 @@ class MainActivity : AppCompatActivity() {
 
                     val newModel = ConfigModel(
                         "warp_${System.currentTimeMillis()}",
-                        "Warp Auto Clean IP",
+                        "WinKoKo Auto Clean IP",
                         configStr,
                         maskedEndpoint,
                         true
@@ -1164,8 +1162,8 @@ class MainActivity : AppCompatActivity() {
                     btnConnectCard.setStrokeColor(Color.parseColor("#4ADE80"))
                     imgPower.setColorFilter(Color.parseColor("#4ADE80"))
 
-                    Toast.makeText(this@MainActivity, "Warp Tunnel Connected!", Toast.LENGTH_SHORT).show()
-                    appendLog("✅ Connected to Warp Tunnel!")
+                    Toast.makeText(this@MainActivity, "WinKoKo Tunnel Connected!", Toast.LENGTH_SHORT).show()
+                    appendLog("✅ Connected to WinKoKo Tunnel!")
 
                     notificationHelper.updateNotification("Measuring...")
 
@@ -1193,8 +1191,8 @@ class MainActivity : AppCompatActivity() {
                 backend.setState(tunnel, com.wireguard.android.backend.Tunnel.State.DOWN, null)
 
                 withContext(Dispatchers.Main) {
-                    appendLog("Disconnected from Warp Tunnel.")
-                    Toast.makeText(this@MainActivity, "Warp Tunnel Disconnected", Toast.LENGTH_SHORT).show()
+                    appendLog("Disconnected from WinKoKo Tunnel.")
+                    Toast.makeText(this@MainActivity, "WinKoKo Tunnel Disconnected", Toast.LENGTH_SHORT).show()
                     resetUi()
                 }
             } catch (e: Exception) {
@@ -1489,7 +1487,7 @@ class MainActivity : AppCompatActivity() {
     // ==================== WgTunnel ====================
 
     class WgTunnel(private val onStateChangedListener: ((com.wireguard.android.backend.Tunnel.State) -> Unit)? = null) : com.wireguard.android.backend.Tunnel {
-        override fun getName(): String = "WARPTunnel"
+        override fun getName(): String = "WinKoKoTunnel"
 
         override fun onStateChange(newState: com.wireguard.android.backend.Tunnel.State) {
             onStateChangedListener?.invoke(newState)
