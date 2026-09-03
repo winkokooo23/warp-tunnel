@@ -88,6 +88,7 @@
         <!-- License Expiration Card -->
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/cardExpireDate"
+            android:visibility="gone"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
@@ -104,7 +105,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="License Expiration"
+                    android:text="Connection Status"
                     android:textColor="#38BDF8"
                     android:textSize="16sp"
                     android:textStyle="bold" />
@@ -113,7 +114,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="2dp"
-                    android:text="Your active subscription validity"
+                    android:text="Keyless mode status"
                     android:textColor="#94A3B8"
                     android:textSize="11sp" />
 
@@ -125,7 +126,7 @@
                     android:background="?android:attr/colorBackground"
                     android:fontFamily="monospace"
                     android:padding="10dp"
-                    android:text="Not Activated / Expired"
+                    android:text="Ready to connect"
                     android:textColor="#F87171"
                     android:textSize="12sp"
                     android:textStyle="bold" />
@@ -150,7 +151,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="WARP Generator Engine"
+                    android:text="WinKoKo Generator Engine"
                     android:textColor="#38BDF8"
                     android:textSize="16sp"
                     android:textStyle="bold" />
