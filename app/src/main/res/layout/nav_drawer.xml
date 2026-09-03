@@ -524,23 +524,32 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="About"
+                    android:text="About WinKoKoOo"
                     android:textColor="#38BDF8"
                     android:textSize="16sp"
                     android:textStyle="bold" />
 
                 <TextView
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="12dp"
-                    android:text="Developed By:"
+                    android:lineSpacingExtra="3dp"
+                    android:text="WinKoKo Tunnel သည် Cloudflare WARP Network နှင့် WireGuard Native Engine ကို အခြေခံထားသော Android VPN Application တစ်ခု ဖြစ်ပါသည်။ Network အခြေအနေအလိုက် Cloudflare Direct API နှင့် Custom Backup API မှ Config ရယူနိုင်ပြီး ချိတ်ဆက်ရန် License Key သို့မဟုတ် Activation Key မလိုအပ်ပါ။\n\nပါဝင်သောလုပ်ဆောင်ချက်များ\n• Dual Engine Support — Direct API နှင့် Backup API\n• WireGuard Native Integration — မြန်ဆန်ပြီး Battery သက်သာမှု\n• IPv4/IPv6 နှင့် Mobile Network Keepalive Support\n• WireGuard URI Config Import\n• Cloudflare နှင့် Google DNS Switcher\n• Real-time Latency Ping နှင့် Connection Logs\n• Modern UI၊ Dark Mode နှင့် Split Tunneling"
+                    android:textColor="?attr/colorOnBackground"
+                    android:textSize="12sp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:text="Developed &amp; Maintained By:"
                     android:textColor="#94A3B8"
                     android:textSize="12sp" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="404 \\ 2.0 &lt;/🇲🇲&gt;"
+                    android:text="WinKoKoOo Development Team"
                     android:textColor="?attr/colorOnBackground"
                     android:textSize="14sp"
                     android:textStyle="bold" />
@@ -549,7 +558,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="12dp"
-                    android:text="Telegram Channel:"
+                    android:text="WinKoKoOo Support Channel:"
                     android:textColor="#94A3B8"
                     android:textSize="12sp" />
 
@@ -559,7 +568,7 @@
                     android:layout_height="wrap_content"
                     android:clickable="true"
                     android:focusable="true"
-                    android:text="https://t.me/premium_channel_404"
+                    android:text="WinKoKoOo Tunnel Community"
                     android:textColor="#38BDF8"
                     android:textSize="13sp"
                     android:textStyle="bold" />
