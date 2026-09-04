@@ -52,6 +52,17 @@ android {
         }
     }
 
+    signingConfigs {
+        if (System.getenv("SIGNING_KEYSTORE_PATH") != null) {
+            create("release") {
+                storeFile = file(System.getenv("SIGNING_KEYSTORE_PATH"))
+                storePassword = System.getenv("SIGNING_STORE_PASSWORD")
+                keyAlias = System.getenv("SIGNING_KEY_ALIAS")
+                keyPassword = System.getenv("SIGNING_KEY_PASSWORD")
+            }
+        }
+    }
+
     buildTypes {
         release {
             // SECURITY: Disable debugging in release builds to prevent reverse engineering
@@ -65,6 +76,9 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            if (System.getenv("SIGNING_KEYSTORE_PATH") != null) {
+                signingConfig = signingConfigs.getByName("release")
+            }
         }
         
         debug {
