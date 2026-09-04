@@ -558,7 +558,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="12dp"
-                    android:text="WinKoKoOo Support Channel:"
+                    android:text="WinKoKoOo Facebook Support:"
                     android:textColor="#94A3B8"
                     android:textSize="12sp" />
 
@@ -568,11 +568,45 @@
                     android:layout_height="wrap_content"
                     android:clickable="true"
                     android:focusable="true"
-                    android:text="WinKoKoOo Tunnel Community"
+                    android:text="WinKoKoOo Facebook Support Page"
                     android:textColor="#38BDF8"
                     android:textSize="13sp"
                     android:textStyle="bold" />
 
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- Burmese Help Card -->
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            app:cardBackgroundColor="?attr/colorSurface"
+            app:cardCornerRadius="16dp"
+            app:strokeWidth="1dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="WinKoKo Tunnel အကူအညီ"
+                    android:textColor="#38BDF8"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:lineSpacingExtra="3dp"
+                    android:text="• ချိတ်ပြီး Internet မရပါက Server ကို ပြန်ရွေးပါ၊ DNS ကို Cloudflare သို့မဟုတ် Google ပြောင်းပြီး ပြန်ချိတ်ပါ။\n• Split Tunneling ဖွင့်ထားပါက သုံးလိုသော App ကို bypass စာရင်းထဲ မထည့်ထားကြောင်း စစ်ပါ။\n• VPN အလိုအလျောက် ပိတ်ပါက Battery Saver နှင့် Background restriction ထဲတွင် WinKoKo Tunnel ကို Unrestricted လုပ်ပါ။\n• ဖုန်းတချို့တွင် APK install ချိန် Install anyway ပြနိုင်ပါသည်။ APK ကို WinKoKoOo ရဲ့ တရားဝင် channel မှသာ ရယူပါ။\n• Android VPN permission နှင့် Notification permission နှစ်ခုလုံးကို Allow လုပ်ထားပါ။\n• မအလုပ်လုပ်သေးပါက About ထဲက WinKoKoOo Facebook Support ကို ဆက်သွယ်ပါ။"
+                    android:textColor="?attr/colorOnBackground"
+                    android:textSize="12sp" />
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
