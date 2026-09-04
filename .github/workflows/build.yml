@@ -33,16 +33,24 @@ jobs:
       - name: Grant wrapper permission
         run: chmod +x ./gradlew
       - name: Prepare stable release signing
-        if: ${{ secrets.SIGNING_KEYSTORE_BASE64 != '' }}
         shell: bash
+        env:
+          SIGNING_KEYSTORE_BASE64: ${{ secrets.SIGNING_KEYSTORE_BASE64 }}
+          SIGNING_STORE_PASSWORD: ${{ secrets.SIGNING_STORE_PASSWORD }}
+          SIGNING_KEY_ALIAS: ${{ secrets.SIGNING_KEY_ALIAS }}
+          SIGNING_KEY_PASSWORD: ${{ secrets.SIGNING_KEY_PASSWORD }}
         run: |
-          echo "${{ secrets.SIGNING_KEYSTORE_BASE64 }}" | base64 --decode > "$RUNNER_TEMP/winkoko-release.jks"
-          {
-            echo "SIGNING_KEYSTORE_PATH=$RUNNER_TEMP/winkoko-release.jks"
-            echo "SIGNING_STORE_PASSWORD=${{ secrets.SIGNING_STORE_PASSWORD }}"
-            echo "SIGNING_KEY_ALIAS=${{ secrets.SIGNING_KEY_ALIAS }}"
-            echo "SIGNING_KEY_PASSWORD=${{ secrets.SIGNING_KEY_PASSWORD }}"
-          } >> "$GITHUB_ENV"
+          if [ -n "$SIGNING_KEYSTORE_BASE64" ]; then
+            echo "$SIGNING_KEYSTORE_BASE64" | base64 --decode > "$RUNNER_TEMP/winkoko-release.jks"
+            {
+              echo "SIGNING_KEYSTORE_PATH=$RUNNER_TEMP/winkoko-release.jks"
+              echo "SIGNING_STORE_PASSWORD=$SIGNING_STORE_PASSWORD"
+              echo "SIGNING_KEY_ALIAS=$SIGNING_KEY_ALIAS"
+              echo "SIGNING_KEY_PASSWORD=$SIGNING_KEY_PASSWORD"
+            } >> "$GITHUB_ENV"
+          else
+            echo "No release keystore configured; building an unsigned release APK."
+          fi
       - name: Build Debug APK
         run: ./gradlew assembleDebug --no-daemon
       - name: Build Release APK
