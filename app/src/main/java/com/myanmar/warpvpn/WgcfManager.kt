@@ -286,10 +286,9 @@ class WgcfManager(private val onLogListener: ((String) -> Unit)? = null) {
         val config = result.getJSONObject("config")
         val peers = config.getJSONArray("peers").getJSONObject(0)
         val serverPublicKey = peers.getString("public_key")
-        val apiEndpoint = peers.optJSONObject("endpoint")
-            ?.optString("host", "")
-            ?.trim()
-            .orEmpty()
+        val endpointObject = peers.optJSONObject("endpoint")
+        val apiEndpoint = endpointObject?.optString("host", "")?.trim().orEmpty()
+        val apiPort = endpointObject?.optInt("port", wireGuardPort.toInt()) ?: wireGuardPort.toInt()
         val selectedEndpoint = apiEndpoint.ifBlank { endpoint }
 
         val interfaceObj = config.getJSONObject("interface")
@@ -302,7 +301,7 @@ class WgcfManager(private val onLogListener: ((String) -> Unit)? = null) {
         return buildRawWireGuardConfig(
             privateKey = privateKey,
             endpoint = selectedEndpoint,
-            port = wireGuardPort,
+            port = apiPort.toString(),
             address = "$ipv4/32, $ipv6/128",
             publicKey = serverPublicKey,
             dns = "1.1.1.1, 1.0.0.1"
@@ -340,13 +339,15 @@ class WgcfManager(private val onLogListener: ((String) -> Unit)? = null) {
         val clientPrivateKey = configObj.getString("private_key").trim()
         val rawAddress = configObj.getString("address").trim()
         val serverPublicKey = configObj.getString("public_key").trim()
+        val customEndpoint = configObj.optString("endpoint", bestEndpoint).trim()
+        val customPort = configObj.optInt("port", wireGuardPort.toInt())
 
         log("✅ Backup api wireGuard config successfully generated!")
 
         return buildRawWireGuardConfig(
             privateKey = clientPrivateKey,
-            endpoint = bestEndpoint,
-            port = wireGuardPort,
+            endpoint = customEndpoint,
+            port = customPort.toString(),
             address = rawAddress,
             publicKey = serverPublicKey,
             dns = "1.1.1.1, 1.0.0.1"

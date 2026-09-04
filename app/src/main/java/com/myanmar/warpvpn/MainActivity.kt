@@ -312,28 +312,27 @@ class MainActivity : AppCompatActivity() {
 
     private fun showHelpDialog() {
         val helpMessage = """
-            Welcome to WinKoKo Tunnel!
+            WinKoKo Tunnel မှ ကြိုဆိုပါတယ်။
             
-            [1] Tap To Connect: Click the main power button to establish a secure WinKoKo connection.
+            [၁] ချိတ်ဆက်ရန် — အဓိက Power ခလုတ်ကို နှိပ်ပြီး VPN ချိတ်ဆက်ပါ။ Android VPN permission ပြရင် Allow ကိုနှိပ်ပါ။
             
-            [2] Engine Options:
-            [3] Cloudflare Direct API: Connects directly through Cloudflare infrastructure.
-            [4] Custom Backup API: Backup option if direct API is blocked.
+            [၂] Engine ရွေးချယ်မှု — Cloudflare Direct API မရပါက Custom Backup API ကို ရွေးပြီး ထပ်မံချိတ်ဆက်ပါ။
             
-            [5] Auto Clean IP:
-            The app automatically scans 500+ Cloudflare IP endpoints in real-time to assign you the lowest latency & best performing IP for your ISP.
+            [၃] Auto Clean IP — သင့် ISP အတွက် latency နည်းသော Cloudflare endpoint ကို အလိုအလျောက် ရွေးပေးပါသည်။
             
-            [6] Split Tunneling:
-            Exclude specific apps from using the VPN connection under the menu settings.
+            [၄] Split Tunneling — Menu > Settings မှာ VPN မသုံးစေလိုသော App များကို ရွေးနိုင်ပါသည်။
             
-            [7] Ping Monitor:
-            Live ping updates for Cloudflare and Facebook servers to verify actual connectivity.
+            [၅] ချိတ်ပြီး Internet မရပါက — Server ကို ပြန်ရွေးပါ၊ DNS ကို Cloudflare (1.1.1.1) သို့မဟုတ် Google (8.8.8.8) ပြောင်းပါ၊ Split Tunneling ကို ပိတ်ပြီး ပြန်ချိတ်ပါ။
+            
+            [၆] VPN အလိုအလျောက် ပိတ်ပါက — Battery Saver/Background restriction ထဲမှာ WinKoKo Tunnel ကို Unrestricted လုပ်ပြီး ပြန်ဖွင့်ပါ။
+            
+            [၇] Help — ဖုန်းတချို့မှာ APK install ချိန် “Install anyway” ပြနိုင်ပါသည်။ APK ကို တရားဝင် WinKoKoOo channel မှသာ ရယူပြီး Android Settings > Install unknown apps ကို ယုံကြည်ရသော Browser/File Manager အတွက်သာ ခွင့်ပြုပါ။
         """.trimIndent()
 
         AlertDialog.Builder(this, R.style.DarkCustomDialog)
-            .setTitle("❓ WinKoKo Tunnel Help")
+            .setTitle("❓ WinKoKo Tunnel အကူအညီ")
             .setMessage(helpMessage)
-            .setPositiveButton("OK") { dialog, _ ->
+            .setPositiveButton("ပိတ်မည်") { dialog, _ ->
                 dialog.dismiss()
             }
             .create()
